@@ -12,6 +12,10 @@ from ml.get_ml_model import get_ml_model, get_transformer
 from ml.load_data import pickle_load, pickle_save, load_file
 
 
+def index(request):
+    return render(request, 'index.html')
+
+
 # Create your views here.
 class Train(GenericAPIView):
     serializer_class = TrainSerializer
@@ -75,7 +79,58 @@ class Predict(GenericAPIView):
         
         except Exception as err:
             return Response(str(err), status=status.HTTP_400_BAD_REQUEST)
-        
+
+
+def train(my_data):
+    try:
+        train_data_path = my_data['train_data']
+        train_labels_path = my_data['train_labels']
+
+        X_train = load_file(train_data_path)
+        y_train = load_file(train_labels_path)
+
+        model_name = my_data['model_name']
+        vectorizer = my_data['vectorizer']
+        save_path = my_data['save_path']
+        save_model = my_data['save_model']
+        save_encoder = my_data['save_encoder']
+        save_transformer = my_data['save_transformer']
+
+        label_encoder = LabelEncoder()
+        model = get_ml_model(model_name)
+
+        y_train = label_encoder.fit_transform(y_train)
+        transformer = get_transformer(vectorizer)
+        transformer.fit(X_train)
+        word_count_vector = transformer.transform(X_train)
+        model.fit(word_count_vector, y_train)
+
+        if save_model:
+            pickle_save(model, save_path, f'{model_name}')
+
+        if save_encoder:
+            pickle_save(label_encoder, save_path, '{label_encoder}')
+
+        if save_transformer:
+            pickle_save(transformer, save_path, f'{vectorizer}')
+
+        return f'Your model {model_name} is trained and saved at {save_path}!'
+
+    except ValueError as e:
+        return Response(e.args[0], status.HTTP_400_BAD_REQUEST)
+
+
+def text_train(request):
+    if request.method == 'POST':
+        form = TrainForm(request.POST)
+        if form.is_valid():
+            my_dict = request.POST.dict()
+            result = train(my_dict)
+            messages.success(request, result)
+
+    form = TrainForm()
+    return render(request, 'train_form.html', {'form': form})
+
 
 def predict(my_data):
     try:
@@ -103,16 +158,10 @@ def text_predict(request):
     if request.method == 'POST':
         form = PredictForm(request.POST)
         if form.is_valid():
-            # text = form.cleaned_data['text']
-            # model_name = form.cleaned_data['model_name']
-            # vectorizer = form.cleaned_data['vectorizer']
-            # load_path = form.cleaned_data['load_path']
-            # text = [form.cleaned_data['text']]
-            # label_encoder = 'label_encoder'
             my_dict = request.POST.dict()
             result = predict(my_dict)
             print(result)
-            messages.success(request, f"Sentiment analysis: \n{result}")
+            messages.success(request, {result})
     
     form = PredictForm()
     return render(request, 'predict_form.html', {'form': form})

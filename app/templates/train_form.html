@@ -1,10 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block body_block %}
+    {% load crispy_forms_tags %}
+			<div class="row">
+				<div class= "col"></div>
+				<div class = "col-6 my-5">
+					<form method='post'>
+						{% csrf_token %}
+						{{form|crispy}}
+						<br>
+						<button type='submit' class="btn btn-primary">Submit</button>
+					</form>
+					<br>
+				</div>
+				<div class="col">
+					<div class = "mt-1">
+						<h4>
+						{% if messages %}
+						<ul class="messages">
+					    {% for message in messages %}
+					    <div  {% if message.tags %} class=" {{ message.tags }} " {% endif %}>
+					    {{ message }} </div>
+					    {% endfor %}
+						</ul>
+						{% endif %}
+						</h4>
+					</div>
+				</div>
+			</div>
 
-</body>
-</html>
+{% endblock %}

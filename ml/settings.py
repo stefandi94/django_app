@@ -11,4 +11,4 @@ TEST_RAW_DIR = os.path.join(RAW_DATA_DIR, 'test')
 
 APP_DIR = os.path.join(BASE_DIR, 'app')
 
-MODEL_DIR = os.path.join(ML_MODEL, 'models')
+MODEL_DIR = os.path.join(ML_MODEL, 'saved_models')

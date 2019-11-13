@@ -20,6 +20,7 @@ from app import views
 from app.views import Predict
 
 urlpatterns = [
+    path('', views.index, name="index"),
     path('app/', include('app.urls')),
     path('admin/', admin.site.urls),
 ]

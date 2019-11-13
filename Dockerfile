@@ -13,7 +13,16 @@ RUN mkdir /app
 WORKDIR /app
 
 # Copy the current directory contents into the container at /music_service
-ADD . /app/
+ADD ./ /app/
 
 # Install any needed packages specified in requirements.txt
 RUN pip install -r ml/requirements.txt
+
+# Migrates the database, uploads staticfiles, and runs the production server
+RUN ls -la ./scripts
+#RUN chmod -R o+x scripts/start.sh
+
+EXPOSE 8000
+ENTRYPOINT ["bash", "chmod -R o+x scripts/start.sh"]
+RUN ls -la ./scripts
+ENTRYPOINT ["scripts/start.sh"]
