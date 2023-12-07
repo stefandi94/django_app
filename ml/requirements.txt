@@ -42,7 +42,7 @@ scikit-learn==0.21.3
 scipy==1.10.0
 six==1.13.0
 spacy==2.2.2
-sqlparse==0.3.0
+sqlparse==0.4.4
 srsly==0.2.0
 tensorboard==2.0.1
 tensorflow==2.11.1
